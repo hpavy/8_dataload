@@ -16,7 +16,7 @@ time_start = time.time()
 
 ############# VARIABLES ################
 
-folder_result_name = "piche"  # name of the result folder
+folder_result_name = "3_piche"  # name of the result folder
 folder_result = "results/" + folder_result_name
 
 
@@ -33,10 +33,10 @@ hyper_param_init = {
     "weight_pde": 1,
     "batch_size": 32,  # for the pde
     "nb_points_pde": 1000000,  # Total number of pde points
-    "Re": 100,
+    "Re": 3900,
     "lr_init": 1e-3,  # Learning rate at the begining of training
     "gamma_scheduler": 0.999,  # Gamma scheduler for lr
-    "nb_layers": 1,
+    "nb_layers": 10,
     "nb_neurons": 32,
     "n_pde_test": 10000,
     "n_data_test": 10000,
@@ -64,7 +64,7 @@ X_train = torch.from_numpy(X_train_np).requires_grad_().to(torch.float32).to(dev
 U_train = torch.from_numpy(U_train_np).requires_grad_().to(torch.float32).to(device)
 training_set = torch.utils.data.DataLoader(
     torch.concat((X_train, U_train), dim=1),
-    batch_size=hyper_param["batch_size"],
+    batch_size=5000,
     shuffle=True,
 )
 
@@ -81,7 +81,7 @@ rectangle = Rectangle(
 
 X_pde = rectangle.generate_lhs(hyper_param["nb_points_pde"]).to(device)
 pde_set = torch.utils.data.DataLoader(
-    X_pde, batch_size=hyper_param["batch_size"], shuffle=True
+    X_pde, batch_size=5000, shuffle=True
 )
 
 # Data test loading

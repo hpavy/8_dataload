@@ -4,6 +4,7 @@ import numpy as np
 import time
 from utils import read_csv, write_csv
 from pathlib import Path
+import itertools
 
 
 def train(
@@ -44,11 +45,11 @@ def train(
         + "--------------",
         file=f,
     )
-
+    training_set_cycle = itertools.cycle(training_set)
     for epoch in range(len(train_loss["total"]), nb_it_tot):
         loss_batch_train = {"total": [], "data": [], "pde": []}
         loss_batch_test = {"total": [], "data": [], "pde": []}
-        for x_u_train, X_pde_batch in zip(training_set, pde_set):
+        for X_pde_batch in pde_set:
             model.train()  # on dit qu'on va entrainer (on a le dropout)
             ## loss du pde
             pred_pde = model(X_pde_batch)
@@ -74,6 +75,7 @@ def train(
             # loss des points de data
             # X_batch = X_train[(batch * batch_size_data)%(len(X_train)-2*batch_size_data) : ((batch + 1) * batch_size_data)%(len(X_train)-batch_size_data), :]
             # U_batch = U_train[(batch * batch_size_data)%(len(X_train)-2*batch_size_data) : ((batch + 1) * batch_size_data)%(len(X_train)-batch_size_data), :]
+            x_u_train = next(training_set_cycle)
             X_train = x_u_train[:, :3]
             U_train = x_u_train[:, 3:]
             pred_data = model(X_train)
